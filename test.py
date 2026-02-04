@@ -18,27 +18,27 @@ try:
         )
     """)
     conn.commit()
+    while True:
+        student_name=input("Enter Student Name: ").strip()
+        if len(student_name)<=30 and student_name:
+            break
+        print("Try again")
 
-    student_name=input("Enter Student Name: ").strip()
-    college_name=input("Enter College Name: ").strip()
-
-    if not student_name or len(student_name)>30:
-        print("Invalid Student Name")
-        exit()
-
-    if not college_name or len(college_name)>50:
-        print("Invalid College Name")
-        exit()
+    while True:
+        college_name=input("Enter College Name: ").strip()
+        if len(college_name)<=50 and college_name:
+            break
+        print("Try again")
 
     def get_marks(prompt, min_val, max_val):
-        try:
-            val=float(input(prompt))
-            if val<min_val or val>max_val:
-                raise ValueError
-            return val
-        except:
-            print(f"Invalid input. Should be b/w {min_val} and {max_val}")
-            exit()
+        while True:
+            try:
+                val=float(input(prompt))
+                if val<min_val or val>max_val:
+                    raise ValueError
+                return val
+            except ValueError:
+                print("Try again")
 
     r1=get_marks("Round1 Marks (0-10): ", 0,10)
     r2=get_marks("Round2 Marks (0-10): ", 0,10)
@@ -46,7 +46,10 @@ try:
     tech=get_marks("Technical Round Marks (0-20): ", 0,20)
 
     total= r1+r2+r3+tech
-    result="Selected" if total>=35 else "Rejected"
+    if(total>=35 and r1>=6.5 and r2>=6.5 and r3>=6.5 and tech>=13):
+        result="Selected"
+    else:
+        result="Rejected"
 
     cursor.execute("""
         INSERT INTO CANDIDATE
@@ -66,9 +69,9 @@ try:
     prev_marks=None
     current_rank=0
 
-    for i, row in enumerate(rows):
+    for row in rows:
         if row[1]!=prev_marks:
-            current_rank=i+1
+            current_rank+=1
         cursor.execute("UPDATE CANDIDATE SET RANK=? WHERE ID=?", (current_rank, row[0])
         )
         prev_marks=row[1]
